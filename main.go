@@ -7,7 +7,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var path = "/composer"
+var (
+	path = "/composer"
+	dst  = "./web/dst"
+)
 
 func main() {
 	e := echo.New()
@@ -18,9 +21,21 @@ func main() {
 
 	assetHandler := http.StripPrefix(path, http.FileServer(rb.HTTPBox()))
 
-	grp.GET("", echo.WrapHandler(assetHandler))
+	grp.GET("", loadIndex(rb))
 	grp.GET("/static/js/*", echo.WrapHandler(assetHandler))
-	// grp.Any("*", echo.WrapHandler(assetHandler))
+	grp.Any("*", echo.WrapHandler(assetHandler))
 
 	e.Start(":8080")
+}
+
+func loadIndex(rb *rice.Box) echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		bytes, err := rb.Bytes("index.html")
+		if err != nil {
+			return err
+		}
+
+		return c.HTMLBlob(http.StatusOK, bytes)
+	}
 }
