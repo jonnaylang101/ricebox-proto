@@ -21,6 +21,7 @@ func main() {
 
 	assetHandler := http.StripPrefix(path, http.FileServer(rb.HTTPBox()))
 
+	grp.GET("/_status", getVersion())
 	grp.GET("", loadIndex(rb))
 	grp.GET("/static/js/*", echo.WrapHandler(assetHandler))
 	grp.Any("*", echo.WrapHandler(assetHandler))
@@ -37,5 +38,11 @@ func loadIndex(rb *rice.Box) echo.HandlerFunc {
 		}
 
 		return c.HTMLBlob(http.StatusOK, bytes)
+	}
+}
+
+func getVersion() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.String(http.StatusOK, "v1.1.1")
 	}
 }
