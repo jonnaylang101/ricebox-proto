@@ -14,9 +14,9 @@ func main() {
 
 	rb := rice.MustFindBox("./web/dst")
 
-	grp := e.Group("/composer")
+	grp := e.Group(path)
 
-	assetHandler := http.StripPrefix("/composer", http.FileServer(rb.HTTPBox()))
+	assetHandler := http.StripPrefix(path, http.FileServer(rb.HTTPBox()))
 
 	grp.GET("", echo.WrapHandler(assetHandler))
 	grp.GET("/static/js/*", echo.WrapHandler(assetHandler))
